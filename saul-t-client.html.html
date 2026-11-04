@@ -1,0 +1,1025 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>SAUL-T Client Portal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap">
+
+<style>
+:root {
+  --bg:        #0a0a0a;
+  --bg-2:      #111111;
+  --bg-3:      #1a1a1a;
+  --fg:        #f0f0f0;
+  --fg-muted:  #9a9a9a;
+  --accent:    #c41a1a;
+  --accent-hi: #e02020;
+  --accent-dim:#7a1010;
+  --border:    #262626;
+  --white:     #ffffff;
+  --good:      #1a7a3a;
+  --good-bg:   #0d2a16;
+  --warn:      #8a6a10;
+  --warn-bg:   #2a2010;
+  --gap-bg:    #2a0d0d;
+  color-scheme: dark;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+  --font-body:    'Barlow', Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100%;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 101;
+  background: var(--bg);
+}
+
+/* ── Gate screen ── */
+.gate {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+.gate-logo {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 48px;
+}
+.gate-logo span { color: var(--accent); }
+.gate-title {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 12vw, 88px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.gate-title .letter { color: var(--accent); }
+.gate-sub {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  text-align: center;
+  margin-bottom: 48px;
+}
+.gate-form {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gate-form input {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.gate-form input:focus { border-color: var(--accent); }
+.gate-form input::placeholder { color: var(--border); letter-spacing: 0.1em; }
+.btn-enter {
+  width: 100%;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--accent);
+  border: none;
+  padding: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-enter:hover { background: var(--accent-hi); }
+.gate-error {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-align: center;
+  display: none;
+}
+.gate-error.visible { display: block; }
+.gate-footer {
+  margin-top: 48px;
+  font-size: 12px;
+  color: var(--accent-dim);
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+/* ── App (hidden until auth) ── */
+.app { display: none; }
+.app.visible { display: block; }
+
+/* ── Header ── */
+.site-header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px max(24px, env(safe-area-inset-left, 0px));
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+}
+.logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+  text-transform: uppercase;
+}
+.logo span { color: var(--accent); }
+.header-right { display: flex; align-items: center; gap: 20px; }
+.header-meta {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+}
+.btn-signout {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-signout:hover { color: var(--fg); border-color: var(--fg-muted); }
+
+.progress-track { height: 3px; background: var(--border); }
+.progress-fill { height: 100%; background: var(--accent); transition: width 0.4s ease; }
+
+/* ── Main ── */
+.main { max-width: 680px; margin: 0 auto; padding-bottom: 80px; }
+
+/* ── Intro ── */
+.intro { padding: 56px 0 40px; }
+.intro-eyebrow {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.intro-title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 8vw, 60px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+  text-wrap: balance;
+  margin: 0 0 10px;
+}
+.intro-title .letter { color: var(--accent); }
+.intro-desc {
+  font-size: 15px;
+  color: var(--fg-muted);
+  line-height: 1.7;
+  max-width: 560px;
+  margin-bottom: 36px;
+}
+.intro-desc strong { color: var(--fg); font-weight: 600; }
+.btn-primary {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--accent);
+  border: none;
+  padding: 14px 36px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--accent-hi); }
+
+.dim-preview {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--border);
+  margin-top: 40px;
+  border: 1px solid var(--border);
+}
+.dim-cell {
+  background: var(--bg-2);
+  padding: 20px 12px;
+  text-align: center;
+}
+.dc-letter {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+.dc-word {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-top: 6px;
+  line-height: 1.3;
+}
+
+/* ── Steps ── */
+.step-screen { display: none; padding: 48px 0 32px; }
+.step-screen.active { display: block; }
+
+.step-header { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 28px; }
+.step-letter-badge {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  flex-shrink: 0;
+}
+.step-number {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.step-name {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+.step-question { font-size: 15px; color: var(--fg-muted); margin-top: 6px; line-height: 1.6; }
+
+.field-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+  display: block;
+}
+textarea, input[type="text"] {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  padding: 14px 16px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  border-radius: 0;
+}
+textarea:focus, input[type="text"]:focus { border-color: var(--accent); }
+textarea { min-height: 100px; }
+
+.situation-block, .notes-block { margin-bottom: 28px; }
+.questions-list { display: flex; flex-direction: column; gap: 24px; margin-bottom: 28px; }
+.q-text { font-size: 15px; font-weight: 500; margin-bottom: 12px; line-height: 1.5; }
+.rating-row { display: flex; gap: 8px; }
+.rating-btn {
+  flex: 1;
+  padding: 10px 4px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.rating-btn:hover { border-color: var(--accent); color: var(--fg); }
+.rating-btn.selected { background: var(--accent); border-color: var(--accent); color: var(--white); }
+.rating-labels { display: flex; justify-content: space-between; margin-top: 6px; }
+.rating-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.step-nav-buttons { display: flex; gap: 12px; align-items: center; margin-top: 8px; }
+.btn-back {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-back:hover { color: var(--fg); border-color: var(--fg-muted); }
+.btn-next {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--accent);
+  border: none;
+  padding: 13px 32px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-next:hover { background: var(--accent-hi); }
+
+/* ── Results ── */
+.results-screen { display: none; padding: 48px 0 40px; }
+.results-screen.active { display: block; }
+
+.results-eyebrow {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.results-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 6vw, 44px);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  text-wrap: balance;
+  margin-bottom: 28px;
+}
+.situation-summary {
+  padding: 16px 20px;
+  background: var(--bg-2);
+  border-left: 3px solid var(--border);
+  margin-bottom: 28px;
+}
+.sit-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 6px;
+}
+.sit-text { font-size: 14px; color: var(--fg-muted); line-height: 1.6; font-style: italic; }
+
+.readiness-verdict {
+  margin-bottom: 28px;
+  padding: 24px;
+  border-left: 4px solid var(--accent);
+  background: var(--bg-2);
+}
+.verdict-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+}
+.verdict-text {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.verdict-sub { font-size: 14px; color: var(--fg-muted); margin-top: 8px; line-height: 1.6; }
+
+.dim-scores-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+}
+.dimensions-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+.dim-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 80px 100px;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+}
+.dim-letter { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--accent); line-height: 1; }
+.dim-name { font-family: var(--font-display); font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.dim-score-bar { position: relative; height: 6px; background: var(--border); }
+.dim-score-fill { height: 100%; background: var(--accent); transition: width 0.6s ease; }
+.dim-score-label { font-family: var(--font-display); font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-align: right; }
+.score-strong { color: #2a9a50; }
+.score-moderate { color: #c8960a; }
+.score-gap { color: var(--accent); }
+
+.blind-spots { margin-bottom: 32px; }
+.blind-spots-title { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 12px; }
+.blind-spot-item { display: flex; gap: 14px; padding: 16px; background: var(--gap-bg); border: 1px solid var(--accent-dim); margin-bottom: 8px; }
+.blind-spot-icon { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--accent); text-transform: uppercase; flex-shrink: 0; padding-top: 2px; }
+.blind-spot-text { font-size: 14px; color: var(--fg); line-height: 1.6; min-width: 0; }
+
+.next-step-block { padding: 24px; background: var(--bg-3); border: 1px solid var(--border); margin-bottom: 32px; }
+.next-step-label { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.next-step-text { font-size: 15px; line-height: 1.65; }
+
+.hpe-footer {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+}
+
+.results-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-restart {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-restart:hover { color: var(--fg); border-color: var(--fg-muted); }
+.btn-copy {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-copy:hover { border-color: var(--fg-muted); }
+.copy-confirm { font-size: 13px; color: #2a9a50; align-self: center; display: none; }
+
+@media (max-width: 480px) {
+  .dim-preview { grid-template-columns: repeat(5, 1fr); }
+  .dim-row { grid-template-columns: 28px 1fr; grid-template-rows: auto auto; }
+  .dim-score-bar { grid-column: 1 / -1; }
+  .dim-score-label { grid-column: 1 / -1; text-align: left; }
+  .rating-btn { font-size: 11px; padding: 8px 2px; }
+  .header-meta { display: none; }
+}
+</style>
+
+<!-- GATE -->
+<div class="gate" id="gateScreen">
+  <div class="gate-logo"><span>HPE</span> Systems LLC</div>
+  <div class="gate-title"><span class="letter">S</span>AUL-<span class="letter">T</span></div>
+  <div class="gate-sub">Decision Readiness Instrument</div>
+  <div class="gate-form">
+    <input type="password" id="accessCode" placeholder="Access Code" autocomplete="off"
+      onkeydown="if(event.key==='Enter')checkCode()">
+    <button class="btn-enter" onclick="checkCode()">Enter</button>
+    <div class="gate-error" id="gateError">Incorrect access code</div>
+  </div>
+  <div class="gate-footer">HPE Systems LLC &nbsp;·&nbsp; Confidential Client Tool</div>
+</div>
+
+<!-- APP -->
+<div class="app" id="appShell">
+
+  <header class="site-header">
+    <div class="logo"><span>S</span>AUL-<span>T</span></div>
+    <div class="header-right">
+      <div class="header-meta">HPE Systems</div>
+      <button class="btn-signout" onclick="signOut()">Sign Out</button>
+    </div>
+  </header>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+  <div class="main">
+
+    <!-- INTRO -->
+    <div class="intro" id="introScreen">
+      <div class="intro-eyebrow">Decision Readiness Instrument</div>
+      <h1 class="intro-title"><span class="letter">S</span>AUL-<span class="letter">T</span></h1>
+      <p class="intro-desc">
+        Before you act on a situation, examine it. This instrument moves you through five dimensions of decision readiness — surfacing blind spots, checking your reasoning, and telling you whether you're ready to lead or need to learn more first.
+        <br><br>
+        <strong>Estimated time: 10–15 minutes.</strong> Answer honestly. The output is for your development, not evaluation.
+      </p>
+      <button class="btn-primary" onclick="startInstrument()">Begin Assessment</button>
+      <div class="dim-preview">
+        <div class="dim-cell"><div class="dc-letter">S</div><div class="dc-word">Situational Awareness</div></div>
+        <div class="dim-cell"><div class="dc-letter">A</div><div class="dc-word">Understanding</div></div>
+        <div class="dim-cell"><div class="dc-letter">U</div><div class="dc-word">Leadership</div></div>
+        <div class="dim-cell"><div class="dc-letter">L</div><div class="dc-word">Learning</div></div>
+        <div class="dim-cell"><div class="dc-letter">T</div><div class="dc-word">Truth</div></div>
+      </div>
+    </div>
+
+    <!-- STEP 0: Situation -->
+    <div class="step-screen" id="step-0">
+      <div class="step-header">
+        <div class="step-letter-badge">?</div>
+        <div class="step-header-text">
+          <div class="step-number">Before You Begin</div>
+          <div class="step-name">Define the Situation</div>
+          <div class="step-question">What landed on your desk? Describe the problem, decision, or performance gap you are facing right now.</div>
+        </div>
+      </div>
+      <div class="situation-block">
+        <label class="field-label" for="situationInput">The situation as presented to you</label>
+        <textarea id="situationInput" rows="5" placeholder="Describe the situation in your own words. Be specific — the more honest you are here, the more useful your results will be."></textarea>
+      </div>
+      <div class="situation-block">
+        <label class="field-label" for="roleInput">Your role in relation to this situation</label>
+        <input type="text" id="roleInput" placeholder="e.g. Team lead, department manager, project owner…">
+      </div>
+      <div class="step-nav-buttons">
+        <button class="btn-next" onclick="goToStep(1)">Continue</button>
+      </div>
+    </div>
+
+    <!-- STEPS 1-5 -->
+    <div class="step-screen" id="step-1">
+      <div class="step-header">
+        <div class="step-letter-badge">S</div>
+        <div class="step-header-text">
+          <div class="step-number">1 of 5</div>
+          <div class="step-name">Situational Awareness</div>
+          <div class="step-question">What do you actually know about this situation — and what are you assuming?</div>
+        </div>
+      </div>
+      <div class="questions-list" id="questions-1"></div>
+      <div class="notes-block">
+        <label class="field-label" for="notes-1">What are you uncertain about? (optional)</label>
+        <textarea id="notes-1" rows="3" placeholder="What do you not yet know about the facts of this situation?"></textarea>
+      </div>
+      <div class="step-nav-buttons">
+        <button class="btn-back" onclick="goToStep(0)">Back</button>
+        <button class="btn-next" onclick="goToStep(2)">Continue</button>
+      </div>
+    </div>
+
+    <div class="step-screen" id="step-2">
+      <div class="step-header">
+        <div class="step-letter-badge">A</div>
+        <div class="step-header-text">
+          <div class="step-number">2 of 5</div>
+          <div class="step-name">Understanding</div>
+          <div class="step-question">Do you understand the people involved — their context, capability, and constraints?</div>
+        </div>
+      </div>
+      <div class="questions-list" id="questions-2"></div>
+      <div class="notes-block">
+        <label class="field-label" for="notes-2">What don't you know about the people involved? (optional)</label>
+        <textarea id="notes-2" rows="3" placeholder="Gaps in your understanding of the people in this situation…"></textarea>
+      </div>
+      <div class="step-nav-buttons">
+        <button class="btn-back" onclick="goToStep(1)">Back</button>
+        <button class="btn-next" onclick="goToStep(3)">Continue</button>
+      </div>
+    </div>
+
+    <div class="step-screen" id="step-3">
+      <div class="step-header">
+        <div class="step-letter-badge">U</div>
+        <div class="step-header-text">
+          <div class="step-number">3 of 5</div>
+          <div class="step-name">Leadership</div>
+          <div class="step-question">What is your role in this situation — and are you part of the problem?</div>
+        </div>
+      </div>
+      <div class="questions-list" id="questions-3"></div>
+      <div class="notes-block">
+        <label class="field-label" for="notes-3">Where might your assumptions be shaping this? (optional)</label>
+        <textarea id="notes-3" rows="3" placeholder="Your blind spots, biases, or stake in the outcome…"></textarea>
+      </div>
+      <div class="step-nav-buttons">
+        <button class="btn-back" onclick="goToStep(2)">Back</button>
+        <button class="btn-next" onclick="goToStep(4)">Continue</button>
+      </div>
+    </div>
+
+    <div class="step-screen" id="step-4">
+      <div class="step-header">
+        <div class="step-letter-badge">L</div>
+        <div class="step-header-text">
+          <div class="step-number">4 of 5</div>
+          <div class="step-name">Learning</div>
+          <div class="step-question">What does history tell you — and are you using it?</div>
+        </div>
+      </div>
+      <div class="questions-list" id="questions-4"></div>
+      <div class="notes-block">
+        <label class="field-label" for="notes-4">What evidence should you gather before deciding? (optional)</label>
+        <textarea id="notes-4" rows="3" placeholder="Data gaps, relevant history, what you need to know…"></textarea>
+      </div>
+      <div class="step-nav-buttons">
+        <button class="btn-back" onclick="goToStep(3)">Back</button>
+        <button class="btn-next" onclick="goToStep(5)">Continue</button>
+      </div>
+    </div>
+
+    <div class="step-screen" id="step-5">
+      <div class="step-header">
+        <div class="step-letter-badge">T</div>
+        <div class="step-header-text">
+          <div class="step-number">5 of 5</div>
+          <div class="step-name">Truth</div>
+          <div class="step-question">What is actually true here — stripped of narrative, politics, and assumption?</div>
+        </div>
+      </div>
+      <div class="questions-list" id="questions-5"></div>
+      <div class="notes-block">
+        <label class="field-label" for="notes-5">The most honest thing you can say about this situation (optional)</label>
+        <textarea id="notes-5" rows="3" placeholder="The hardest truth you are holding about this…"></textarea>
+      </div>
+      <div class="step-nav-buttons">
+        <button class="btn-back" onclick="goToStep(4)">Back</button>
+        <button class="btn-next" onclick="generateResults()">Generate My Report</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-screen" id="resultsScreen">
+      <div class="results-eyebrow">SAUL-T Assessment Complete</div>
+      <div class="results-title">Decision Readiness Report</div>
+      <div class="situation-summary">
+        <div class="sit-label">Situation Assessed</div>
+        <div class="sit-text" id="resultsSituation"></div>
+      </div>
+      <div class="readiness-verdict" id="verdictBlock">
+        <div class="verdict-label">Decision Readiness</div>
+        <div class="verdict-text" id="verdictText"></div>
+        <div class="verdict-sub" id="verdictSub"></div>
+      </div>
+      <div class="dim-scores-label">Dimension Scores</div>
+      <div class="dimensions-grid" id="dimensionsGrid"></div>
+      <div class="blind-spots" id="blindSpotsBlock">
+        <div class="blind-spots-title">Areas Flagged for Attention</div>
+        <div id="blindSpotsList"></div>
+      </div>
+      <div class="next-step-block">
+        <div class="next-step-label">Recommended Next Step</div>
+        <div class="next-step-text" id="nextStepText"></div>
+      </div>
+      <div class="results-actions">
+        <button class="btn-restart" onclick="restartInstrument()">New Assessment</button>
+        <button class="btn-copy" onclick="copyReport()">Copy Report</button>
+        <span class="copy-confirm" id="copyConfirm">Copied</span>
+      </div>
+      <div class="hpe-footer">HPE Systems LLC &nbsp;·&nbsp; Confidential &nbsp;·&nbsp; hpesystems.com</div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+const ACCESS_CODE = 'HPE2026';
+
+const QUESTIONS = {
+  1: [
+    { id: 's1', text: 'I can clearly separate what I have directly observed from what I have been told or assumed.' },
+    { id: 's2', text: 'I know the full scope of this situation — who is affected and what the boundaries are.' },
+    { id: 's3', text: 'I understand what triggered this situation and when it began.' },
+    { id: 's4', text: 'I have enough factual information to describe the situation accurately to someone who was not there.' },
+  ],
+  2: [
+    { id: 'a1', text: 'I understand the capabilities and limitations of the people involved.' },
+    { id: 'a2', text: 'I know what constraints — workload, resources, environment — the people in this situation are operating under.' },
+    { id: 'a3', text: 'I have considered motivations and context beyond what is immediately visible.' },
+    { id: 'a4', text: 'I would be able to represent the perspective of each person involved fairly.' },
+  ],
+  3: [
+    { id: 'u1', text: 'I have examined whether my own decisions or behaviors contributed to this situation.' },
+    { id: 'u2', text: 'I have clear authority to act — my role in this situation is well-defined.' },
+    { id: 'u3', text: 'I am not letting pressure from above or below push me toward a decision I am not ready to make.' },
+    { id: 'u4', text: 'I can articulate my reasoning for any action I take — it is based on evidence, not emotion or convenience.' },
+  ],
+  4: [
+    { id: 'l1', text: 'I have looked at whether this type of situation has occurred before in this organization.' },
+    { id: 'l2', text: 'I am drawing on data or documented performance trends, not only my memory or impression.' },
+    { id: 'l3', text: 'I know what interventions have been tried before and what the outcomes were.' },
+    { id: 'l4', text: 'I would be able to explain what I expect to happen as a result of my decision — and how I will know if I am wrong.' },
+  ],
+  5: [
+    { id: 't1', text: 'I can state the core problem in one sentence without hedging or reframing.' },
+    { id: 't2', text: 'I am not protecting a narrative — my own or anyone else\'s — at the expense of accuracy.' },
+    { id: 't3', text: 'If the most honest answer is uncomfortable, I am still willing to act on it.' },
+    { id: 't4', text: 'The action I am about to take addresses the actual problem, not the visible symptom.' },
+  ]
+};
+
+const DIM_NAMES = { 1:'Situational Awareness', 2:'Understanding', 3:'Leadership', 4:'Learning', 5:'Truth' };
+const DIM_LETTERS = { 1:'S', 2:'A', 3:'U', 4:'L', 5:'T' };
+
+let responses = {};
+let currentStep = -1;
+let authed = false;
+
+function checkCode() {
+  const val = document.getElementById('accessCode').value.trim().toUpperCase().replace(/\s/g,'');
+  if (val === ACCESS_CODE.replace(/\s/g,'')) {
+    document.getElementById('gateScreen').style.display = 'none';
+    document.getElementById('appShell').classList.add('visible');
+    authed = true;
+    try { sessionStorage.setItem('saul_auth', '1'); } catch(e) {}
+  } else {
+    const err = document.getElementById('gateError');
+    err.classList.add('visible');
+    document.getElementById('accessCode').value = '';
+    setTimeout(() => err.classList.remove('visible'), 3000);
+  }
+}
+
+function signOut() {
+  try { sessionStorage.removeItem('saul_auth'); } catch(e) {}
+  document.getElementById('appShell').classList.remove('visible');
+  document.getElementById('gateScreen').style.display = 'flex';
+  document.getElementById('accessCode').value = '';
+  restartInstrument();
+}
+
+// Resume session if already authed
+try {
+  if (sessionStorage.getItem('saul_auth') === '1') {
+    document.getElementById('gateScreen').style.display = 'none';
+    document.getElementById('appShell').classList.add('visible');
+    authed = true;
+  }
+} catch(e) {}
+
+function startInstrument() {
+  document.getElementById('introScreen').style.display = 'none';
+  goToStep(0);
+}
+
+function goToStep(n) {
+  document.querySelectorAll('.step-screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('resultsScreen').classList.remove('active');
+  currentStep = n;
+  const screen = document.getElementById('step-' + n);
+  if (screen) {
+    screen.classList.add('active');
+    if (n >= 1 && n <= 5) renderQuestions(n);
+  }
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderQuestions(step) {
+  const container = document.getElementById('questions-' + step);
+  if (!container || container.children.length > 0) return;
+  QUESTIONS[step].forEach(q => {
+    const item = document.createElement('div');
+    item.className = 'question-item';
+    item.innerHTML = `
+      <div class="q-text">${q.text}</div>
+      <div class="rating-row">
+        ${[1,2,3,4,5].map(v => `<button class="rating-btn${responses[q.id]===v?' selected':''}" data-qid="${q.id}" data-val="${v}" onclick="selectRating('${q.id}',${v})">${v}</button>`).join('')}
+      </div>
+      <div class="rating-labels">
+        <span class="rating-label">Not at all</span>
+        <span class="rating-label">Completely</span>
+      </div>`;
+    container.appendChild(item);
+  });
+}
+
+function selectRating(qid, val) {
+  responses[qid] = val;
+  document.querySelectorAll(`[data-qid="${qid}"]`).forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.val) === val);
+  });
+}
+
+function updateProgress() {
+  const pct = currentStep < 0 ? 0 : Math.round((currentStep / 6) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function getDimScore(step) {
+  const qs = QUESTIONS[step];
+  const vals = qs.map(q => responses[q.id] || 0);
+  const answered = vals.filter(v => v > 0).length;
+  if (answered === 0) return 0;
+  return vals.reduce((a,b) => a+b, 0) / (qs.length * 5);
+}
+
+function getScoreLabel(pct) {
+  if (pct >= 0.75) return { label: 'Strong', cls: 'score-strong' };
+  if (pct >= 0.50) return { label: 'Moderate', cls: 'score-moderate' };
+  return { label: 'Gap', cls: 'score-gap' };
+}
+
+function generateResults() {
+  const dimScores = {};
+  for (let i = 1; i <= 5; i++) dimScores[i] = getDimScore(i);
+  const overall = Object.values(dimScores).reduce((a,b) => a+b, 0) / 5;
+
+  let verdictText, verdictSub, nextStep, borderColor;
+  if (overall >= 0.75) {
+    verdictText = 'Ready to Act';
+    verdictSub = 'Your decision readiness is strong across all five dimensions. You have the awareness, understanding, and evidence needed to lead with confidence. Document your reasoning and move forward.';
+    nextStep = 'You are prepared to make and implement this decision. Before acting, write down your expected outcome and how you will measure whether the decision worked. This keeps you accountable and builds organizational learning over time.';
+    borderColor = 'var(--good)';
+  } else if (overall >= 0.55) {
+    verdictText = 'Proceed with Caution';
+    verdictSub = 'You have enough awareness to begin, but significant gaps remain. Address the flagged areas before committing to a final course of action. A partial picture leads to a partial solution.';
+    nextStep = 'Take your lowest-scoring dimension and spend the next 48 hours closing that gap — through direct conversation, data review, or consultation. Then reassess before making a final decision.';
+    borderColor = '#c8960a';
+  } else if (overall >= 0.35) {
+    verdictText = 'Investigate First';
+    verdictSub = 'Your readiness gaps are substantial. Acting now increases the risk of solving the wrong problem. This situation warrants deeper investigation before any action is taken.';
+    nextStep = 'Run a structured problem validation process before committing resources or making decisions. The situation as presented may not be the situation that needs solving. Identify what you need to know, who you need to speak with, and what evidence you need before you act.';
+    borderColor = 'var(--accent)';
+  } else {
+    verdictText = 'Not Ready';
+    verdictSub = 'Critical gaps exist across multiple dimensions. You are not yet in a position to make a sound decision. Gather evidence, speak directly to the people involved, and return with better information.';
+    nextStep = 'Pause. The pressure to act is not the same as the readiness to act well. Identify your three biggest information gaps, assign ownership for closing each one, and set a decision date that gives you time to get what you need.';
+    borderColor = 'var(--accent)';
+  }
+
+  document.getElementById('resultsSituation').textContent = document.getElementById('situationInput').value || '(not entered)';
+  document.getElementById('verdictText').textContent = verdictText;
+  document.getElementById('verdictSub').textContent = verdictSub;
+  document.getElementById('verdictBlock').style.borderLeftColor = borderColor;
+  document.getElementById('nextStepText').textContent = nextStep;
+
+  const grid = document.getElementById('dimensionsGrid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const pct = dimScores[i];
+    const { label, cls } = getScoreLabel(pct);
+    const row = document.createElement('div');
+    row.className = 'dim-row';
+    row.innerHTML = `
+      <div class="dim-letter">${DIM_LETTERS[i]}</div>
+      <div class="dim-name">${DIM_NAMES[i]}</div>
+      <div class="dim-score-bar"><div class="dim-score-fill" style="width:${Math.round(pct*100)}%"></div></div>
+      <div class="dim-score-label ${cls}">${label} · ${Math.round(pct*100)}%</div>`;
+    grid.appendChild(row);
+  }
+
+  const blindSpots = [];
+  for (let step = 1; step <= 5; step++) {
+    QUESTIONS[step].forEach(q => {
+      if ((responses[q.id] || 0) <= 2) blindSpots.push({ dim: DIM_LETTERS[step], text: q.text });
+    });
+  }
+  const bsl = document.getElementById('blindSpotsList');
+  const bsBlock = document.getElementById('blindSpotsBlock');
+  bsl.innerHTML = '';
+  if (blindSpots.length === 0) {
+    bsBlock.style.display = 'none';
+  } else {
+    bsBlock.style.display = 'block';
+    blindSpots.slice(0, 6).forEach(bs => {
+      const item = document.createElement('div');
+      item.className = 'blind-spot-item';
+      item.innerHTML = `<div class="blind-spot-icon">${bs.dim}</div><div class="blind-spot-text">${bs.text}</div>`;
+      bsl.appendChild(item);
+    });
+  }
+
+  document.querySelectorAll('.step-screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('resultsScreen').classList.add('active');
+  document.getElementById('progressFill').style.width = '100%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restartInstrument() {
+  responses = {};
+  document.querySelectorAll('.step-screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('resultsScreen').classList.remove('active');
+  document.getElementById('introScreen').style.display = 'block';
+  document.querySelectorAll('.questions-list').forEach(el => el.innerHTML = '');
+  document.querySelectorAll('textarea').forEach(el => el.value = '');
+  document.querySelectorAll('input[type="text"]').forEach(el => el.value = '');
+  document.getElementById('progressFill').style.width = '0%';
+  currentStep = -1;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyReport() {
+  const sit = document.getElementById('situationInput').value || '(not entered)';
+  const verdict = document.getElementById('verdictText').textContent;
+  const sub = document.getElementById('verdictSub').textContent;
+  const next = document.getElementById('nextStepText').textContent;
+  const flags = Array.from(document.querySelectorAll('.blind-spot-text')).map(el => '• ' + el.textContent).join('\n');
+  const report = `SAUL-T — Decision Readiness Report
+HPE Systems LLC · hpesystems.com
+${new Date().toLocaleDateString()}
+
+SITUATION
+${sit}
+
+DECISION READINESS: ${verdict}
+${sub}
+
+AREAS FLAGGED
+${flags || 'None flagged.'}
+
+RECOMMENDED NEXT STEP
+${next}`;
+
+  navigator.clipboard.writeText(report).then(() => {
+    const c = document.getElementById('copyConfirm');
+    c.style.display = 'inline';
+    setTimeout(() => { c.style.display = 'none'; }, 2500);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = report;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
+
+</body></html>

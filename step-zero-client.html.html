@@ -1,0 +1,1185 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Step Zero Client Portal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap">
+
+<style>
+:root {
+  --bg:        #0a0a0a;
+  --bg-2:      #111111;
+  --bg-3:      #1a1a1a;
+  --fg:        #f0f0f0;
+  --fg-muted:  #9a9a9a;
+  --accent:    #c41a1a;
+  --accent-hi: #e02020;
+  --accent-dim:#7a1010;
+  --border:    #262626;
+  --white:     #ffffff;
+  --good:      #1a7a3a;
+  --good-bg:   #0d2a16;
+  --warn:      #8a6a10;
+  --warn-bg:   #2a2010;
+  color-scheme: dark;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+  --font-body:    'Barlow', Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 101;
+  background: var(--bg);
+}
+
+/* ── Gate ── */
+.gate {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+.gate-logo {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 48px;
+}
+.gate-logo span { color: var(--accent); }
+.gate-title {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 12vw, 88px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.gate-title .z { color: var(--accent); }
+.gate-sub {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  text-align: center;
+  margin-bottom: 48px;
+}
+.gate-form {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gate-form input {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+  border-radius: 0;
+}
+.gate-form input:focus { border-color: var(--accent); }
+.gate-form input::placeholder { color: var(--border); letter-spacing: 0.1em; }
+.btn-enter {
+  width: 100%;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--accent);
+  border: none;
+  padding: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-enter:hover { background: var(--accent-hi); }
+.gate-error {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-align: center;
+  display: none;
+}
+.gate-error.visible { display: block; }
+.gate-footer {
+  margin-top: 48px;
+  font-size: 12px;
+  color: var(--accent-dim);
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+/* ── App ── */
+.app { display: none; }
+.app.visible { display: block; }
+
+/* ── Header ── */
+.site-header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px max(24px, env(safe-area-inset-right, 0px));
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+}
+.logo {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+  text-transform: uppercase;
+}
+.logo .z { color: var(--accent); }
+.header-right { display: flex; align-items: center; gap: 20px; }
+.header-meta {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+}
+.btn-signout {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-signout:hover { color: var(--fg); border-color: var(--fg-muted); }
+.progress-track { height: 3px; background: var(--border); }
+.progress-fill { height: 100%; background: var(--accent); transition: width 0.4s ease; }
+
+/* ── Main ── */
+.main { max-width: 680px; margin: 0 auto; padding-bottom: 80px; }
+
+/* ── Intro ── */
+.intro { padding: 56px 0 40px; }
+.intro-eyebrow {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.intro-title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 8vw, 60px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+  text-wrap: balance;
+  margin: 0 0 10px;
+}
+.intro-title .z { color: var(--accent); }
+.governing-q {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--fg-muted);
+  border-left: 3px solid var(--accent);
+  padding-left: 20px;
+  margin: 24px 0 28px;
+  line-height: 1.4;
+}
+.intro-desc {
+  font-size: 15px;
+  color: var(--fg-muted);
+  line-height: 1.7;
+  max-width: 560px;
+  margin-bottom: 36px;
+}
+.intro-desc strong { color: var(--fg); font-weight: 600; }
+.btn-primary {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--accent);
+  border: none;
+  padding: 14px 36px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--accent-hi); }
+
+.phase-preview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  margin-top: 40px;
+  border: 1px solid var(--border);
+}
+.phase-cell {
+  background: var(--bg-2);
+  padding: 20px 16px;
+}
+.pc-num {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.pc-name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.pc-desc {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* ── Step screens ── */
+.step-screen { display: none; padding: 48px 0 32px; }
+.step-screen.active { display: block; }
+
+.step-tag {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.step-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 6vw, 44px);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 8px;
+  text-wrap: balance;
+}
+.step-purpose {
+  font-size: 15px;
+  color: var(--fg-muted);
+  line-height: 1.65;
+  margin-bottom: 32px;
+  max-width: 560px;
+}
+.step-purpose strong { color: var(--fg); font-weight: 600; }
+
+.field-group { margin-bottom: 24px; }
+.field-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+  display: block;
+}
+textarea, input[type="text"] {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  padding: 14px 16px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  border-radius: 0;
+}
+textarea:focus, input[type="text"]:focus { border-color: var(--accent); }
+textarea { min-height: 100px; }
+
+.evidence-fields { display: flex; flex-direction: column; gap: 12px; }
+.evidence-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.radio-group { display: flex; flex-direction: column; gap: 10px; }
+.radio-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.radio-option:hover { border-color: var(--accent); }
+.radio-option.selected { border-color: var(--accent); background: #1a0808; }
+.radio-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.15s;
+}
+.radio-option.selected .radio-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.radio-label {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.radio-desc { font-size: 13px; color: var(--fg-muted); line-height: 1.5; margin-top: 2px; }
+
+.rating-row { display: flex; gap: 8px; margin-top: 8px; }
+.rating-btn {
+  flex: 1;
+  padding: 10px 4px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.rating-btn:hover { border-color: var(--accent); color: var(--fg); }
+.rating-btn.selected { background: var(--accent); border-color: var(--accent); color: var(--white); }
+.rating-labels { display: flex; justify-content: space-between; margin-top: 6px; }
+.rating-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.nav-buttons { display: flex; gap: 12px; align-items: center; margin-top: 32px; }
+.btn-back {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-back:hover { color: var(--fg); border-color: var(--fg-muted); }
+.btn-next {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--accent);
+  border: none;
+  padding: 13px 32px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-next:hover { background: var(--accent-hi); }
+
+.hint-box {
+  padding: 14px 18px;
+  background: var(--bg-3);
+  border-left: 3px solid var(--accent-dim);
+  margin-bottom: 24px;
+}
+.hint-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  margin-bottom: 4px;
+}
+.hint-text { font-size: 13px; color: var(--fg-muted); line-height: 1.6; }
+
+/* ── Results ── */
+.results-screen { display: none; padding: 48px 0 40px; }
+.results-screen.active { display: block; }
+
+.results-eyebrow {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.results-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 6vw, 44px);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  margin-bottom: 28px;
+  text-wrap: balance;
+}
+.charter-block {
+  margin-bottom: 32px;
+  border: 1px solid var(--border);
+}
+.charter-header {
+  background: var(--bg-2);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.charter-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.charter-body { padding: 20px; }
+.charter-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.charter-row:last-child { border-bottom: none; padding-bottom: 0; }
+.cr-key {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  padding-top: 2px;
+}
+.cr-val { font-size: 14px; line-height: 1.6; }
+
+.decision-banner {
+  margin-bottom: 28px;
+  padding: 24px;
+  border-left: 4px solid var(--accent);
+  background: var(--bg-2);
+}
+.db-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+}
+.db-decision {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.db-rationale { font-size: 14px; color: var(--fg-muted); margin-top: 10px; line-height: 1.65; }
+
+.next-steps-block { margin-bottom: 32px; }
+.ns-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+}
+.ns-item {
+  display: flex;
+  gap: 16px;
+  padding: 14px 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+  align-items: flex-start;
+}
+.ns-num {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  flex-shrink: 0;
+  padding-top: 2px;
+  min-width: 20px;
+}
+.ns-text { font-size: 14px; color: var(--fg); line-height: 1.6; min-width: 0; }
+
+.hpe-footer {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+}
+.results-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; }
+.btn-restart {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-restart:hover { color: var(--fg); border-color: var(--fg-muted); }
+.btn-copy {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-copy:hover { border-color: var(--fg-muted); }
+.copy-confirm { font-size: 13px; color: #2a9a50; align-self: center; display: none; }
+
+@media (max-width: 540px) {
+  .phase-preview { grid-template-columns: repeat(2, 1fr); }
+  .evidence-row { grid-template-columns: 1fr; }
+  .charter-row { grid-template-columns: 1fr; }
+  .cr-key { color: var(--accent-dim); }
+  .header-meta { display: none; }
+}
+</style>
+
+<!-- GATE -->
+<div class="gate" id="gateScreen">
+  <div class="gate-logo"><span>HPE</span> Systems LLC</div>
+  <div class="gate-title">STEP <span class="z">0</span></div>
+  <div class="gate-sub">Problem Validation Instrument</div>
+  <div class="gate-form">
+    <input type="password" id="accessCode" placeholder="Access Code" autocomplete="off"
+      onkeydown="if(event.key==='Enter')checkCode()">
+    <button class="btn-enter" onclick="checkCode()">Enter</button>
+    <div class="gate-error" id="gateError">Incorrect access code</div>
+  </div>
+  <div class="gate-footer">HPE Systems LLC &nbsp;·&nbsp; Confidential Client Tool</div>
+</div>
+
+<!-- APP -->
+<div class="app" id="appShell">
+
+  <header class="site-header">
+    <div class="logo">Step <span class="z">0</span></div>
+    <div class="header-right">
+      <div class="header-meta">HPE Systems</div>
+      <button class="btn-signout" onclick="signOut()">Sign Out</button>
+    </div>
+  </header>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+  <div class="main">
+
+    <!-- INTRO -->
+    <div class="intro" id="introScreen">
+      <div class="intro-eyebrow">Problem Validation Instrument</div>
+      <h1 class="intro-title">Step <span class="z">0</span></h1>
+      <div class="governing-q">"Are we solving the right problem?"</div>
+      <p class="intro-desc">
+        Before root-cause analysis. Before interventions. Before resources are committed. <strong>Step Zero</strong> challenges the assumption that the problem as presented is the problem that needs solving.
+        <br><br>
+        This instrument moves you through four validation phases — Identify, Validate, Contextualize, and Reframe — producing a Validated Problem Charter that tells you what to do next.
+        <br><br>
+        <strong>Estimated time: 15–20 minutes.</strong>
+      </p>
+      <button class="btn-primary" onclick="startInstrument()">Begin Validation</button>
+      <div class="phase-preview">
+        <div class="phase-cell">
+          <div class="pc-num">01</div>
+          <div class="pc-name">Identify</div>
+          <div class="pc-desc">Document the problem claim as reported</div>
+        </div>
+        <div class="phase-cell">
+          <div class="pc-num">02</div>
+          <div class="pc-name">Validate</div>
+          <div class="pc-desc">Examine objective evidence</div>
+        </div>
+        <div class="phase-cell">
+          <div class="pc-num">03</div>
+          <div class="pc-name">Contextualize</div>
+          <div class="pc-desc">Identify affected people and systems</div>
+        </div>
+        <div class="phase-cell">
+          <div class="pc-num">04</div>
+          <div class="pc-name">Reframe</div>
+          <div class="pc-desc">Distinguish symptom from underlying problem</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 1: IDENTIFY -->
+    <div class="step-screen" id="step-1">
+      <div class="step-tag">Phase 01 · Identify</div>
+      <h2 class="step-title">Document the Problem Claim</h2>
+      <p class="step-purpose">Capture the problem exactly as it was reported to you — before any analysis or reframing. The goal here is precision, not interpretation. <strong>What was handed to you?</strong></p>
+      <div class="hint-box">
+        <div class="hint-label">Why this matters</div>
+        <div class="hint-text">The way a problem is stated often reflects the beliefs, biases, and blind spots of the person reporting it. Capturing it verbatim before you analyze it is the first act of discipline in Step Zero.</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-reporter">Who reported this problem?</label>
+        <input type="text" id="f-reporter" placeholder="Name, role, or group (e.g. Director of Operations, frontline supervisor, executive team)">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-claim">The problem as reported — in their words</label>
+        <textarea id="f-claim" rows="4" placeholder="Write the problem statement as close to verbatim as possible. If it was informal, capture the substance of what was said."></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-expected">What performance is expected?</label>
+        <input type="text" id="f-expected" placeholder="e.g. Errors below 2%, average handle time under 4 minutes, 95% on-time delivery…">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-actual">What performance is actually occurring?</label>
+        <input type="text" id="f-actual" placeholder="e.g. Error rate averaging 6.4%, handle time 7.2 minutes, 71% on-time…">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-urgency">Why is this being addressed now?</label>
+        <textarea id="f-urgency" rows="3" placeholder="What triggered this problem report at this time? Customer complaint, audit finding, leadership directive, recurring pattern, incident…"></textarea>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-next" onclick="goToStep(2)">Continue to Validate</button>
+      </div>
+    </div>
+
+    <!-- PHASE 2: VALIDATE -->
+    <div class="step-screen" id="step-2">
+      <div class="step-tag">Phase 02 · Validate</div>
+      <h2 class="step-title">Examine Objective Evidence</h2>
+      <p class="step-purpose">Now push back on the claim. What do you <em>actually</em> know versus what you are <em>assuming</em>? Evidence is what changes the direction of an investigation. Opinion is what reinforces the direction already set.</p>
+      <div class="hint-box">
+        <div class="hint-label">Common trap</div>
+        <div class="hint-text">Organizations often skip this phase and proceed directly to solutions. The result is a well-executed answer to the wrong question.</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-evidence-supports">Evidence that supports the problem claim</label>
+        <textarea id="f-evidence-supports" rows="3" placeholder="Data, observations, records, reports, or measurements that confirm the problem is real and as described…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-evidence-contradicts">Evidence that contradicts or complicates the claim</label>
+        <textarea id="f-evidence-contradicts" rows="3" placeholder="Data or patterns that suggest the problem may be different, smaller, larger, or more nuanced than reported…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-evidence-missing">Critical evidence that is missing</label>
+        <textarea id="f-evidence-missing" rows="3" placeholder="What data, records, or observations would materially change your understanding — and do you have access to them?"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">How confident are you that this problem is real and accurately scoped?</label>
+        <div class="rating-row">
+          <button class="rating-btn" data-field="f-confidence" data-val="1" onclick="selectRating('f-confidence',1)">1</button>
+          <button class="rating-btn" data-field="f-confidence" data-val="2" onclick="selectRating('f-confidence',2)">2</button>
+          <button class="rating-btn" data-field="f-confidence" data-val="3" onclick="selectRating('f-confidence',3)">3</button>
+          <button class="rating-btn" data-field="f-confidence" data-val="4" onclick="selectRating('f-confidence',4)">4</button>
+          <button class="rating-btn" data-field="f-confidence" data-val="5" onclick="selectRating('f-confidence',5)">5</button>
+        </div>
+        <div class="rating-labels">
+          <span class="rating-label">Not at all confident</span>
+          <span class="rating-label">Fully confident</span>
+        </div>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-back" onclick="goToStep(1)">Back</button>
+        <button class="btn-next" onclick="goToStep(3)">Continue to Contextualize</button>
+      </div>
+    </div>
+
+    <!-- PHASE 3: CONTEXTUALIZE -->
+    <div class="step-screen" id="step-3">
+      <div class="step-tag">Phase 03 · Contextualize</div>
+      <h2 class="step-title">Identify Affected People and Systems</h2>
+      <p class="step-purpose">Problems do not exist in isolation. This phase maps the human, operational, and systemic context surrounding the problem — because the solution must fit the system, not just the symptom.</p>
+      <div class="field-group">
+        <label class="field-label" for="f-people">Who is directly affected by this problem?</label>
+        <textarea id="f-people" rows="3" placeholder="Specific roles, teams, or populations — not just the most visible group, but everyone experiencing the gap…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-systems">What processes, systems, or workflows are involved?</label>
+        <textarea id="f-systems" rows="3" placeholder="The operational environment where this problem occurs — tools, handoffs, decision points, known constraints…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-history">Has this problem or something similar occurred before?</label>
+        <textarea id="f-history" rows="3" placeholder="Prior incidents, previous interventions, recurring patterns — and what happened when they were addressed (or not)…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-alternatives">What other explanations could account for this gap?</label>
+        <textarea id="f-alternatives" rows="3" placeholder="Alternative hypotheses — systemic constraints, external factors, resource limitations, leadership practices — that the initial report did not account for…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">How complex is the system this problem is embedded in?</label>
+        <div class="rating-row">
+          <button class="rating-btn" data-field="f-complexity" data-val="1" onclick="selectRating('f-complexity',1)">1</button>
+          <button class="rating-btn" data-field="f-complexity" data-val="2" onclick="selectRating('f-complexity',2)">2</button>
+          <button class="rating-btn" data-field="f-complexity" data-val="3" onclick="selectRating('f-complexity',3)">3</button>
+          <button class="rating-btn" data-field="f-complexity" data-val="4" onclick="selectRating('f-complexity',4)">4</button>
+          <button class="rating-btn" data-field="f-complexity" data-val="5" onclick="selectRating('f-complexity',5)">5</button>
+        </div>
+        <div class="rating-labels">
+          <span class="rating-label">Simple and contained</span>
+          <span class="rating-label">Highly complex</span>
+        </div>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-back" onclick="goToStep(2)">Back</button>
+        <button class="btn-next" onclick="goToStep(4)">Continue to Reframe</button>
+      </div>
+    </div>
+
+    <!-- PHASE 4: REFRAME -->
+    <div class="step-screen" id="step-4">
+      <div class="step-tag">Phase 04 · Reframe</div>
+      <h2 class="step-title">Distinguish Symptom from Problem</h2>
+      <p class="step-purpose">This is the governing act of Step Zero. Having gathered evidence and mapped context, you now determine whether the problem as reported is the problem that needs solving — or whether it is a symptom of something deeper.</p>
+      <div class="hint-box">
+        <div class="hint-label">The critical distinction</div>
+        <div class="hint-text">A symptom is what is visible. The problem is what is causing it. Treating a symptom without addressing the problem produces temporary relief and recurring gaps.</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-symptom">What appears to be a symptom rather than the core problem?</label>
+        <textarea id="f-symptom" rows="3" placeholder="What in the original claim reads as an effect rather than a cause — the visible performance gap, the complaint, the incident?"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-validated">The validated problem statement — your best current definition</label>
+        <textarea id="f-validated" rows="4" placeholder="State the problem as you now understand it after validation. This may be the same as reported, more precisely scoped, fundamentally reframed, or a determination that there is insufficient evidence to proceed."></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Validation decision</label>
+        <div class="radio-group" id="decisionGroup">
+          <div class="radio-option" onclick="selectDecision('proceed')">
+            <div class="radio-dot" id="dot-proceed"></div>
+            <div>
+              <div class="radio-label">Proceed</div>
+              <div class="radio-desc">The problem is validated, accurately scoped, and worth solving. Root-cause analysis and intervention planning can begin.</div>
+            </div>
+          </div>
+          <div class="radio-option" onclick="selectDecision('reframe')">
+            <div class="radio-dot" id="dot-reframe"></div>
+            <div>
+              <div class="radio-label">Reframe Required</div>
+              <div class="radio-desc">The problem exists but is not accurately defined. The problem statement must be revised before investigation continues.</div>
+            </div>
+          </div>
+          <div class="radio-option" onclick="selectDecision('investigate')">
+            <div class="radio-dot" id="dot-investigate"></div>
+            <div>
+              <div class="radio-label">Investigate Further</div>
+              <div class="radio-desc">Insufficient evidence to validate or refute the claim. Additional data collection or stakeholder engagement is required before a decision can be made.</div>
+            </div>
+          </div>
+          <div class="radio-option" onclick="selectDecision('no-action')">
+            <div class="radio-dot" id="dot-no-action"></div>
+            <div>
+              <div class="radio-label">No Action Required</div>
+              <div class="radio-desc">The evidence does not support the problem claim as stated. The issue does not warrant further investigation or intervention at this time.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="f-rationale">Rationale for this decision</label>
+        <textarea id="f-rationale" rows="4" placeholder="Explain the reasoning behind your validation decision — what evidence supports it, what uncertainty remains, and what conditions would change it…"></textarea>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-back" onclick="goToStep(3)">Back</button>
+        <button class="btn-next" onclick="generateResults()">Generate Validated Problem Charter</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-screen" id="resultsScreen">
+      <div class="results-eyebrow">Step Zero Complete</div>
+      <div class="results-title">Validated Problem Charter</div>
+
+      <div class="charter-block">
+        <div class="charter-header">
+          <div class="charter-label">Problem Identification</div>
+          <div style="font-size:12px;color:var(--fg-muted);font-family:var(--font-display);letter-spacing:0.08em;" id="charterDate"></div>
+        </div>
+        <div class="charter-body" id="charterBodyIdentify"></div>
+      </div>
+
+      <div class="decision-banner" id="decisionBanner">
+        <div class="db-label">Validation Decision</div>
+        <div class="db-decision" id="dbDecision"></div>
+        <div class="db-rationale" id="dbRationale"></div>
+      </div>
+
+      <div class="charter-block">
+        <div class="charter-header">
+          <div class="charter-label">Evidence Summary</div>
+        </div>
+        <div class="charter-body" id="charterBodyEvidence"></div>
+      </div>
+
+      <div class="charter-block">
+        <div class="charter-header">
+          <div class="charter-label">Context and Boundaries</div>
+        </div>
+        <div class="charter-body" id="charterBodyContext"></div>
+      </div>
+
+      <div class="charter-block">
+        <div class="charter-header">
+          <div class="charter-label">Validated Problem Statement</div>
+        </div>
+        <div class="charter-body">
+          <div style="font-size:16px;line-height:1.65;font-style:italic;" id="charterValidated"></div>
+        </div>
+      </div>
+
+      <div class="next-steps-block">
+        <div class="ns-title">Recommended Next Steps</div>
+        <div id="nextStepsList"></div>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn-restart" onclick="restartInstrument()">New Validation</button>
+        <button class="btn-copy" onclick="copyCharter()">Copy Charter</button>
+        <span class="copy-confirm" id="copyConfirm">Copied</span>
+      </div>
+      <div class="hpe-footer">HPE Systems LLC &nbsp;·&nbsp; Confidential &nbsp;·&nbsp; hpesystems.com</div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+const ACCESS_CODE = 'HPE2026';
+let decision = null;
+let ratings = {};
+let authed = false;
+
+function checkCode() {
+  const val = document.getElementById('accessCode').value.trim().toUpperCase().replace(/\s/g,'');
+  if (val === ACCESS_CODE.replace(/\s/g,'')) {
+    document.getElementById('gateScreen').style.display = 'none';
+    document.getElementById('appShell').classList.add('visible');
+    authed = true;
+    try { sessionStorage.setItem('sz_auth', '1'); } catch(e) {}
+  } else {
+    const err = document.getElementById('gateError');
+    err.classList.add('visible');
+    document.getElementById('accessCode').value = '';
+    setTimeout(() => err.classList.remove('visible'), 3000);
+  }
+}
+
+function signOut() {
+  try { sessionStorage.removeItem('sz_auth'); } catch(e) {}
+  document.getElementById('appShell').classList.remove('visible');
+  document.getElementById('gateScreen').style.display = 'flex';
+  document.getElementById('accessCode').value = '';
+  restartInstrument();
+}
+
+try {
+  if (sessionStorage.getItem('sz_auth') === '1') {
+    document.getElementById('gateScreen').style.display = 'none';
+    document.getElementById('appShell').classList.add('visible');
+    authed = true;
+  }
+} catch(e) {}
+
+let currentStep = 0;
+
+function startInstrument() {
+  document.getElementById('introScreen').style.display = 'none';
+  goToStep(1);
+}
+
+function goToStep(n) {
+  document.querySelectorAll('.step-screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('resultsScreen').classList.remove('active');
+  currentStep = n;
+  const screen = document.getElementById('step-' + n);
+  if (screen) screen.classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  const pct = Math.round((currentStep / 5) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function selectRating(field, val) {
+  ratings[field] = val;
+  document.querySelectorAll(`[data-field="${field}"]`).forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.val) === val);
+  });
+}
+
+function selectDecision(val) {
+  decision = val;
+  ['proceed','reframe','investigate','no-action'].forEach(d => {
+    const dot = document.getElementById('dot-' + d);
+    const opt = dot ? dot.closest('.radio-option') : null;
+    if (dot) dot.style.background = d === val ? 'var(--accent)' : '';
+    if (dot) dot.style.borderColor = d === val ? 'var(--accent)' : '';
+    if (opt) opt.classList.toggle('selected', d === val);
+  });
+}
+
+const DECISION_LABELS = {
+  'proceed':     'Proceed',
+  'reframe':     'Reframe Required',
+  'investigate': 'Investigate Further',
+  'no-action':   'No Action Required'
+};
+
+const DECISION_COLORS = {
+  'proceed':     'var(--good)',
+  'reframe':     '#c8960a',
+  'investigate': 'var(--accent)',
+  'no-action':   'var(--fg-muted)'
+};
+
+const NEXT_STEPS = {
+  'proceed': [
+    'Issue the Validated Problem Charter to the investigation team and confirm scope boundaries.',
+    'Assign a lead investigator and define what root-cause methodology will be used.',
+    'Set a decision date for initial findings and confirm access to the people, data, and systems needed.',
+    'Establish baseline performance metrics at the outset so improvement can be measured objectively.'
+  ],
+  'reframe': [
+    'Distribute the problem statement revision to the original problem reporter and key stakeholders.',
+    'Identify what additional evidence or perspective is needed to refine the scope.',
+    'Return to Phase 01 (Identify) with the revised framing and document the difference from the original claim.',
+    'Confirm alignment on the reframed problem before proceeding to root-cause investigation.'
+  ],
+  'investigate': [
+    'List the specific evidence gaps identified in Phase 02 and assign ownership for closing each one.',
+    'Identify the stakeholders, records, or data sources that would change your confidence level.',
+    'Set a deadline for evidence collection and schedule a return to Step Zero when it is in hand.',
+    'Do not commission interventions or solutions until this process is complete.'
+  ],
+  'no-action': [
+    'Document the validation decision and rationale in writing for the record.',
+    'Communicate the finding to the problem reporter with the evidence basis for the decision.',
+    'Define the conditions or threshold that would warrant reopening the investigation.',
+    'Archive this charter as reference if similar claims arise in the future.'
+  ]
+};
+
+function val(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function charterRow(key, value) {
+  if (!value) return '';
+  return `<div class="charter-row"><div class="cr-key">${key}</div><div class="cr-val">${value.replace(/\n/g,'<br>')}</div></div>`;
+}
+
+function generateResults() {
+  const confidence = ratings['f-confidence'] || '—';
+  const complexity = ratings['f-complexity'] || '—';
+  const dec = decision || 'investigate';
+  const decLabel = DECISION_LABELS[dec];
+  const decColor = DECISION_COLORS[dec];
+
+  document.getElementById('charterDate').textContent = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+
+  document.getElementById('charterBodyIdentify').innerHTML =
+    charterRow('Reported by', val('f-reporter')) +
+    charterRow('Problem as reported', val('f-claim')) +
+    charterRow('Expected performance', val('f-expected')) +
+    charterRow('Actual performance', val('f-actual')) +
+    charterRow('Trigger / urgency', val('f-urgency'));
+
+  document.getElementById('dbDecision').textContent = decLabel;
+  document.getElementById('dbDecision').style.color = decColor;
+  document.getElementById('decisionBanner').style.borderLeftColor = decColor;
+  document.getElementById('dbRationale').textContent = val('f-rationale') || 'No rationale provided.';
+
+  document.getElementById('charterBodyEvidence').innerHTML =
+    charterRow('Supporting evidence', val('f-evidence-supports')) +
+    charterRow('Contradicting evidence', val('f-evidence-contradicts')) +
+    charterRow('Missing evidence', val('f-evidence-missing')) +
+    charterRow('Confidence in claim', confidence + ' / 5');
+
+  document.getElementById('charterBodyContext').innerHTML =
+    charterRow('Affected people', val('f-people')) +
+    charterRow('Systems and processes', val('f-systems')) +
+    charterRow('History / prior attempts', val('f-history')) +
+    charterRow('Alternative explanations', val('f-alternatives')) +
+    charterRow('System complexity', complexity + ' / 5');
+
+  document.getElementById('charterValidated').textContent = val('f-validated') || '(not entered)';
+
+  const steps = NEXT_STEPS[dec];
+  document.getElementById('nextStepsList').innerHTML = steps.map((s, i) =>
+    `<div class="ns-item"><div class="ns-num">0${i+1}</div><div class="ns-text">${s}</div></div>`
+  ).join('');
+
+  document.querySelectorAll('.step-screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('resultsScreen').classList.add('active');
+  document.getElementById('progressFill').style.width = '100%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restartInstrument() {
+  decision = null;
+  ratings = {};
+  document.querySelectorAll('.step-screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('resultsScreen').classList.remove('active');
+  document.getElementById('introScreen').style.display = 'block';
+  document.querySelectorAll('textarea').forEach(el => el.value = '');
+  document.querySelectorAll('input[type="text"]').forEach(el => el.value = '');
+  document.querySelectorAll('.rating-btn').forEach(el => el.classList.remove('selected'));
+  ['proceed','reframe','investigate','no-action'].forEach(d => {
+    const dot = document.getElementById('dot-' + d);
+    const opt = dot ? dot.closest('.radio-option') : null;
+    if (dot) { dot.style.background = ''; dot.style.borderColor = ''; }
+    if (opt) opt.classList.remove('selected');
+  });
+  document.getElementById('progressFill').style.width = '0%';
+  currentStep = 0;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyCharter() {
+  const dec = decision || 'investigate';
+  const lines = [
+    'STEP ZERO — Validated Problem Charter',
+    'HPE Systems LLC · hpesystems.com',
+    new Date().toLocaleDateString(),
+    '',
+    'PROBLEM IDENTIFICATION',
+    'Reported by: ' + val('f-reporter'),
+    'Problem as reported: ' + val('f-claim'),
+    'Expected performance: ' + val('f-expected'),
+    'Actual performance: ' + val('f-actual'),
+    'Trigger / urgency: ' + val('f-urgency'),
+    '',
+    'VALIDATION DECISION: ' + DECISION_LABELS[dec],
+    val('f-rationale'),
+    '',
+    'EVIDENCE',
+    'Supporting: ' + val('f-evidence-supports'),
+    'Contradicting: ' + val('f-evidence-contradicts'),
+    'Missing: ' + val('f-evidence-missing'),
+    'Confidence: ' + (ratings['f-confidence'] || '—') + ' / 5',
+    '',
+    'CONTEXT',
+    'Affected people: ' + val('f-people'),
+    'Systems / processes: ' + val('f-systems'),
+    'History: ' + val('f-history'),
+    'Alternative explanations: ' + val('f-alternatives'),
+    'System complexity: ' + (ratings['f-complexity'] || '—') + ' / 5',
+    '',
+    'VALIDATED PROBLEM STATEMENT',
+    val('f-validated'),
+    '',
+    'NEXT STEPS',
+    ...NEXT_STEPS[dec].map((s, i) => `${i+1}. ${s}`)
+  ];
+  const text = lines.join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const c = document.getElementById('copyConfirm');
+    c.style.display = 'inline';
+    setTimeout(() => { c.style.display = 'none'; }, 2500);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
+
+</body></html>
